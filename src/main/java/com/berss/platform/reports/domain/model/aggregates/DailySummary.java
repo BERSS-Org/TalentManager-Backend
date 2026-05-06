@@ -18,9 +18,16 @@ import com.berss.platform.reports.domain.model.commands.UpdateDailySummaryComman
 import java.time.LocalDate;
 
 /**
- * Daily Summary aggregate root
+ * Daily Summary aggregate root.
+ * entryTime / exitTime are decimal hours of the day (e.g. 9.5 for 09:30).
  */
 @Entity
+@Table(uniqueConstraints = {
+        @UniqueConstraint(
+                name = "uk_daily_summary_employee_company_date",
+                columnNames = {"employee_id", "company_id", "summary_day", "summary_month", "summary_year"}
+        )
+})
 public class DailySummary extends AuditableAbstractAggregateRoot<DailySummary> {
 
     @Embedded
@@ -32,18 +39,23 @@ public class DailySummary extends AuditableAbstractAggregateRoot<DailySummary> {
     private CompanyId companyId;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "day", column = @Column(name = "summary_day")),
+            @AttributeOverride(name = "month", column = @Column(name = "summary_month")),
+            @AttributeOverride(name = "year", column = @Column(name = "summary_year"))
+    })
     private SpecificDate specificDate;
 
-    private Integer entryTime;
+    private Double entryTime;
 
-    private Integer exitTime;
+    private Double exitTime;
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "score"))
     private Score score;
 
     @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "input"))
+    @AttributeOverride(name = "value", column = @Column(name = "input_amount"))
     private InputAmount inputAmount;
 
     /**
@@ -54,7 +66,7 @@ public class DailySummary extends AuditableAbstractAggregateRoot<DailySummary> {
     /**
      * Constructor with all fields
      */
-    public DailySummary(Long employeeId, Long companyId, int _day, int _month, int _year, int _entryTime, int _exitTime, double _inputAmount, int _score) {
+    public DailySummary(Long employeeId, Long companyId, int _day, int _month, int _year, double _entryTime, double _exitTime, double _inputAmount, int _score) {
         this.employeeId = new EmployeeId(employeeId);
         this.companyId = new CompanyId(companyId);
         this.specificDate = new SpecificDate(_day, _month, _year);
@@ -105,17 +117,25 @@ public class DailySummary extends AuditableAbstractAggregateRoot<DailySummary> {
 
     public LocalDate getLocalDate() { return specificDate.toLocalDate(); }
 
-    public Integer getEntryTime() { return entryTime; }
+    public Double getEntryTime() { return entryTime; }
 
-    public Integer getExitTime() { return exitTime; }
+    public Double getExitTime() { return exitTime; }
+
+    /**
+     * Hours worked on this day (exit minus entry).
+     */
+    public double getHoursWorked() {
+        if (entryTime == null || exitTime == null) return 0;
+        return Math.max(0, exitTime - entryTime);
+    }
 
     // Setters / Updaters
 
-    public void updateEntryTime(int entryTime) {
+    public void updateEntryTime(double entryTime) {
         this.entryTime = entryTime;
     }
 
-    public void updateExitTime(int exitTime) {
+    public void updateExitTime(double exitTime) {
         this.exitTime = exitTime;
     }
 

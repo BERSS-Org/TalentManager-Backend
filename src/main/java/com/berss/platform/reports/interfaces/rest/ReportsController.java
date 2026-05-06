@@ -85,7 +85,6 @@ public class ReportsController {
     })
     public ResponseEntity<List<ReportResource>> getAllReports() {
         var reports = queryService.handle(new GetAllReportsQuery());
-        if (reports.isEmpty()) return ResponseEntity.notFound().build();
 
         var resources = reports.stream()
                 .map(ReportResourceFromEntityAssembler::toResourcefromEntity)
@@ -125,9 +124,8 @@ public class ReportsController {
             @ApiResponse(responseCode = "200", description = "Reports found"),
             @ApiResponse(responseCode = "404", description = "No reports found for company")
     })
-    public ResponseEntity<List<ReportResource>> getReportsByCompanyId(@PathVariable CompanyId companyId) {
-        var reports = queryService.handle(new GetReportsByCompanyIdQuery(companyId));
-        if (reports.isEmpty()) return ResponseEntity.notFound().build();
+    public ResponseEntity<List<ReportResource>> getReportsByCompanyId(@PathVariable Long companyId) {
+        var reports = queryService.handle(new GetReportsByCompanyIdQuery(new CompanyId(companyId)));
 
         var resources = reports.stream()
                 .map(ReportResourceFromEntityAssembler::toResourcefromEntity)

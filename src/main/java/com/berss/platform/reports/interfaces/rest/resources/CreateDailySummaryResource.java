@@ -6,8 +6,8 @@ public record CreateDailySummaryResource(
         Integer day,
         Integer month,
         Integer year,
-        Integer entryTime,
-        Integer exitTime,
+        Double entryTime,
+        Double exitTime,
         Double inputAmount,
         Integer score
 ) {
@@ -37,8 +37,12 @@ public record CreateDailySummaryResource(
             throw new IllegalArgumentException("exitTime cannot be null, less than 0 or greater than 24");
         }
 
-        if (inputAmount == null || inputAmount < 0) {
-            throw new IllegalArgumentException("InputAmount cannot be null or less than 0");
+        if (exitTime <= entryTime) {
+            throw new IllegalArgumentException("exitTime must be greater than entryTime");
+        }
+
+        if (inputAmount != null && inputAmount < 0) {
+            throw new IllegalArgumentException("InputAmount cannot be negative");
         }
 
         if (score == null || score < 0 || score > 10) {

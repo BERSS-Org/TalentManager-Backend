@@ -5,12 +5,14 @@ import com.berss.platform.employees.domain.model.queries.GetAllEmployeesQuery;
 import com.berss.platform.employees.domain.model.queries.GetEmployeesByIdQuery;
 import com.berss.platform.employees.domain.services.EmployeeCommandService;
 import com.berss.platform.employees.domain.services.EmployeeQueryService;
+import com.berss.platform.employees.infrastructure.persistence.jpa.repositories.EmployeeRepository;
 import com.berss.platform.employees.interfaces.rest.resources.CreateEmployeeResource;
 import com.berss.platform.employees.interfaces.rest.resources.EmployeeResource;
 import com.berss.platform.employees.interfaces.rest.resources.UpdateEmployeeResource;
 import com.berss.platform.employees.interfaces.rest.transform.CreateEmployeeCommandFromResourceAssembler;
 import com.berss.platform.employees.interfaces.rest.transform.EmployeeResourceFromEntityAssembler;
 import com.berss.platform.employees.interfaces.rest.transform.UpdateEmployeeCommandFromResourceAssembler;
+import com.berss.platform.shared.domain.model.valueobjects.CompanyId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -31,9 +33,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class EmployeesController {
     private final EmployeeCommandService employeeCommandService;
     private final EmployeeQueryService employeeQueryService;
-    public EmployeesController(EmployeeCommandService employeeCommandService, EmployeeQueryService employeeQueryService) {
+    private final EmployeeRepository employeeRepository;
+    public EmployeesController(EmployeeCommandService employeeCommandService, EmployeeQueryService employeeQueryService, EmployeeRepository employeeRepository) {
         this.employeeCommandService = employeeCommandService;
         this.employeeQueryService = employeeQueryService;
+        this.employeeRepository = employeeRepository;
     }
 
     @PostMapping
@@ -75,11 +79,20 @@ public class EmployeesController {
             @ApiResponse(responseCode = "404", description = "Employee not found")})
     public ResponseEntity<List<EmployeeResource>> getAllEmployees() {
         var employee = employeeQueryService.handle(new GetAllEmployeesQuery());
-        if (employee.isEmpty()) return ResponseEntity.notFound().build();
         var employeeResources = employee.stream()
                 .map(EmployeeResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
         return ResponseEntity.ok(employeeResources);
+    }
+
+    @GetMapping("/company/{companyId}")
+    @Operation(summary = "Get employees by company", description = "Get all employees for a company")
+    public ResponseEntity<List<EmployeeResource>> getEmployeesByCompany(@PathVariable Long companyId) {
+        var employees = employeeRepository.findByCompanyId(new CompanyId(companyId));
+        var resources = employees.stream()
+                .map(EmployeeResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(resources);
     }
 
 

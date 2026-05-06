@@ -30,6 +30,10 @@ public class MonthlySummary extends AuditableAbstractAggregateRoot<MonthlySummar
     private CompanyId companyId;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "year", column = @Column(name = "summary_year")),
+            @AttributeOverride(name = "month", column = @Column(name = "summary_month"))
+    })
     private YearMonthPeriod period;
 
     private Integer totalHours;

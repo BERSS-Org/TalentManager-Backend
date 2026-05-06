@@ -11,47 +11,50 @@ public record CreateEmployeeCommand(
         String occupation,
         LocalDate entryDate,
         String teamName,
-        Long companyId
+        Long companyId,
+        Double hourlyRate,
+        Double hourlyCost
 ) {
 
     public CreateEmployeeCommand {
-        // Validate firstName
         if (firstName == null || firstName.trim().isEmpty()) {
             throw new IllegalArgumentException("firstName cannot be null or empty");
         }
-        if (firstName.length() < 3 || firstName.length() > 50) {
-            throw new IllegalArgumentException("firstName must be between 3 and 50 characters");
+        if (firstName.length() < 2 || firstName.length() > 50) {
+            throw new IllegalArgumentException("firstName must be between 2 and 50 characters");
         }
 
-        // Validate lastName
         if (lastName == null || lastName.trim().isEmpty()) {
             throw new IllegalArgumentException("lastName cannot be null or empty");
         }
-        if (lastName.length() < 3 || lastName.length() > 50) {
-            throw new IllegalArgumentException("lastName must be between 3 and 50 characters");
+        if (lastName.length() < 2 || lastName.length() > 50) {
+            throw new IllegalArgumentException("lastName must be between 2 and 50 characters");
         }
 
-        // Validate occupation
         if (occupation == null || occupation.trim().isEmpty()) {
             throw new IllegalArgumentException("occupation cannot be null or empty");
         }
 
-        // Validate entryDate
         if (entryDate == null) {
             throw new IllegalArgumentException("entryDate cannot be null");
         }
 
-        // Validate teamName
         if (teamName == null || teamName.trim().isEmpty()) {
             throw new IllegalArgumentException("teamName cannot be null or empty");
         }
-        if (teamName.length() < 3 || teamName.length() > 50) {
-            throw new IllegalArgumentException("teamName must be between 3 and 50 characters");
+        if (teamName.length() < 2 || teamName.length() > 50) {
+            throw new IllegalArgumentException("teamName must be between 2 and 50 characters");
         }
 
-        // Validate companyId
         if (companyId == null || companyId <= 0) {
             throw new IllegalArgumentException("companyId must be greater than 0");
+        }
+
+        if (hourlyRate != null && hourlyRate < 0) {
+            throw new IllegalArgumentException("hourlyRate cannot be negative");
+        }
+        if (hourlyCost != null && hourlyCost < 0) {
+            throw new IllegalArgumentException("hourlyCost cannot be negative");
         }
     }
 }

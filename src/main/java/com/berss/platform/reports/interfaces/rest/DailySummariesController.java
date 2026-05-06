@@ -93,7 +93,6 @@ public class DailySummariesController {
     })
     public ResponseEntity<List<DailySummaryResource>> getAllDailySummaries() {
         var summaries = queryService.handle(new GetAllDailySummariesQuery());
-        if (summaries.isEmpty()) return ResponseEntity.notFound().build();
 
         var resources = summaries.stream()
                 .map(DailySummaryResourceFromEntityAssembler::toResourcefromEntity)
@@ -137,7 +136,6 @@ public class DailySummariesController {
         var companyId_ = new CompanyId(companyId);
         var query = new GetDailySummariesByCompanyIdQuery(companyId_);
         var summaries = queryService.handle(query);
-        if (summaries.isEmpty()) return ResponseEntity.notFound().build();
 
         var resources = summaries.stream()
                 .map(DailySummaryResourceFromEntityAssembler::toResourcefromEntity)
@@ -155,7 +153,6 @@ public class DailySummariesController {
         var employeeId_ = new EmployeeId(employeeId);
         var query = new GetDailySummariesByEmployeeIdQuery(employeeId_);
         var summaries = queryService.handle(query);
-        if (summaries.isEmpty()) return ResponseEntity.notFound().build();
 
         var resources = summaries.stream()
                 .map(DailySummaryResourceFromEntityAssembler::toResourcefromEntity)

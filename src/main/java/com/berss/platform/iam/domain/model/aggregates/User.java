@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 @Entity
+@Table(name = "users")
 public class User extends AuditableModel {
 
     @Getter
@@ -45,5 +46,11 @@ public class User extends AuditableModel {
         this.password = hashedPassword;
         this.managerId = new ManagerId(managerId);
         this.companyId = new CompanyId(companyId);
+    }
+
+    public void changePassword(String newHashedPassword) {
+        if (newHashedPassword == null || newHashedPassword.isBlank())
+            throw new IllegalArgumentException("Password is required.");
+        this.password = newHashedPassword;
     }
 }

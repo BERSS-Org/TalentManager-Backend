@@ -7,8 +7,9 @@ public record DailySummaryResource(
         Integer day,
         Integer month,
         Integer year,
-        Integer entryTime,
-        Integer exitTime,
+        Double entryTime,
+        Double exitTime,
+        Double hoursWorked,
         Double inputAmount,
         Integer score
 ) {}

@@ -21,6 +21,7 @@ public class DailySummaryResourceFromEntityAssembler {
                 entity.getYear(),
                 entity.getEntryTime(),
                 entity.getExitTime(),
+                entity.getHoursWorked(),
                 entity.getInput(),
                 entity.getScore()
         );

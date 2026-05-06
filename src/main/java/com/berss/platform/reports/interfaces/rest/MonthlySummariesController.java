@@ -93,7 +93,6 @@ public class MonthlySummariesController {
     })
     public ResponseEntity<List<MonthlySummaryResource>> getAllMonthlySummaries() {
         var summaries = queryService.handle(new GetAllMonthlySummariesQuery());
-        if (summaries.isEmpty()) return ResponseEntity.notFound().build();
 
         var resources = summaries.stream()
                 .map(MonthlySummaryResourceFromEntityAssembler::toResourcefromEntity)
@@ -137,7 +136,6 @@ public class MonthlySummariesController {
         var companyId_ = new CompanyId(companyId);
         var query = new GetMonthlySummariesByCompanyIdQuery(companyId_);
         var summaries = queryService.handle(query);
-        if (summaries.isEmpty()) return ResponseEntity.notFound().build();
 
         var resources = summaries.stream()
                 .map(MonthlySummaryResourceFromEntityAssembler::toResourcefromEntity)
@@ -155,7 +153,6 @@ public class MonthlySummariesController {
         var employeeId_ = new EmployeeId(employeeId);
         var query = new GetMonthlySummariesByEmployeeIdQuery(employeeId_);
         var summaries = queryService.handle(query);
-        if (summaries.isEmpty()) return ResponseEntity.notFound().build();
 
         var resources = summaries.stream()
                 .map(MonthlySummaryResourceFromEntityAssembler::toResourcefromEntity)

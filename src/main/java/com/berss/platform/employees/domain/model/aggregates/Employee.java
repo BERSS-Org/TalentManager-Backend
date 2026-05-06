@@ -34,6 +34,17 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
     private CompanyId companyId;
 
     /**
+     * What the company bills the client per worked hour. Drives auto-revenue calculation
+     * when the daily summary leaves inputAmount empty.
+     */
+    private Double hourlyRate;
+
+    /**
+     * What the company pays the employee per worked hour. Drives cost & margin metrics.
+     */
+    private Double hourlyCost;
+
+    /**
      * Constructor with all fields
      */
     public Employee(String firstName, String lastName, String occupation, LocalDate entryDate, String teamName, Long companyId) {
@@ -42,6 +53,15 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
         this.entryDate = new EntryDate(entryDate);
         this.teamName = new TeamName(teamName);
         this.companyId = new CompanyId(companyId);
+        this.hourlyRate = 0.0;
+        this.hourlyCost = 0.0;
+    }
+
+    public Employee(String firstName, String lastName, String occupation, LocalDate entryDate, String teamName,
+                    Long companyId, Double hourlyRate, Double hourlyCost) {
+        this(firstName, lastName, occupation, entryDate, teamName, companyId);
+        this.hourlyRate = hourlyRate == null ? 0.0 : hourlyRate;
+        this.hourlyCost = hourlyCost == null ? 0.0 : hourlyCost;
     }
 
     /**
@@ -58,6 +78,8 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
         this.entryDate = new EntryDate(command.entryDate());
         this.teamName = new TeamName(command.teamName());
         this.companyId = new CompanyId(command.companyId());
+        this.hourlyRate = command.hourlyRate() == null ? 0.0 : Math.max(0.0, command.hourlyRate());
+        this.hourlyCost = command.hourlyCost() == null ? 0.0 : Math.max(0.0, command.hourlyCost());
     }
 
     // Getters
@@ -84,6 +106,10 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
         return companyId.getValue();
     }
 
+    public Double getHourlyRate() { return hourlyRate == null ? 0.0 : hourlyRate; }
+
+    public Double getHourlyCost() { return hourlyCost == null ? 0.0 : hourlyCost; }
+
     // Setters / Updaters
 
 
@@ -92,6 +118,12 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
         this.occupation = occupation;
         this.entryDate = new EntryDate(entryDate);
         this.teamName = new TeamName(teamName);
+        return this;
+    }
+
+    public Employee updateCompensation(Double hourlyRate, Double hourlyCost) {
+        this.hourlyRate = hourlyRate == null ? 0.0 : Math.max(0.0, hourlyRate);
+        this.hourlyCost = hourlyCost == null ? 0.0 : Math.max(0.0, hourlyCost);
         return this;
     }
 

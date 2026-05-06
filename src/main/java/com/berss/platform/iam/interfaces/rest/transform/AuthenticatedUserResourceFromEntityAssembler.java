@@ -5,6 +5,12 @@ import com.berss.platform.iam.interfaces.rest.resources.AuthenticatedUserResourc
 
 public class AuthenticatedUserResourceFromEntityAssembler {
     public static AuthenticatedUserResource toResourceFromEntity(User user, String token) {
-        return new AuthenticatedUserResource(user.getId(), user.getUsername(), token);
+        return new AuthenticatedUserResource(
+                user.getId(),
+                user.getUsername(),
+                user.getManagerId().getValue(),
+                user.getCompanyId().getValue(),
+                token
+        );
     }
 }

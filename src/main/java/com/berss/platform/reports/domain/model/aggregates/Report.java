@@ -3,13 +3,17 @@ package com.berss.platform.reports.domain.model.aggregates;
 import com.berss.platform.reports.domain.model.commands.UpdateReportCommand;
 import com.berss.platform.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import com.berss.platform.shared.domain.model.valueobjects.CompanyId;
-import com.berss.platform.reports.domain.model.valueobjects.MonthlySummaryId;
 
 import jakarta.persistence.*;
 
 import com.berss.platform.reports.domain.model.commands.CreateReportCommand;
 import lombok.Getter;
 
+/**
+ * Report aggregate.
+ * Anchored to a (employee, year, month) computed monthly aggregate
+ * — no persisted MonthlySummary is required anymore.
+ */
 @Entity
 public class Report extends AuditableAbstractAggregateRoot<Report> {
 
@@ -25,34 +29,40 @@ public class Report extends AuditableAbstractAggregateRoot<Report> {
     private CompanyId companyId;
 
     @Getter
-    @Embedded
-    @AttributeOverride(name = "monthlySummaryId", column = @Column(name = "monthly_summary_id"))
-    private MonthlySummaryId monthlySummaryId;
+    private Long employeeId;
+
+    @Getter
+    @Column(name = "period_year")
+    private Integer year;
+
+    @Getter
+    @Column(name = "period_month")
+    private Integer month;
 
     // Constructors
 
     public Report() {}
 
-    public Report(String title, String content, Long companyId, Long monthlySummaryId) {
+    public Report(String title, String content, Long companyId, Long employeeId, Integer year, Integer month) {
         this.title = title;
         this.content = content;
         this.companyId = new CompanyId(companyId);
-        this.monthlySummaryId = new MonthlySummaryId(monthlySummaryId);
+        this.employeeId = employeeId;
+        this.year = year;
+        this.month = month;
     }
 
     public Report(CreateReportCommand command) {
         this.title = command.title();
         this.content = command.content();
         this.companyId = new CompanyId(command.companyId());
-        this.monthlySummaryId = new MonthlySummaryId(command.monthlySummaryId());
+        this.employeeId = command.employeeId();
+        this.year = command.year();
+        this.month = command.month();
     }
 
     public Long getCompanyId() {
         return companyId.getValue();
-    }
-
-    public Long getMonthlySummaryId() {
-        return monthlySummaryId.getValue();
     }
 
     // Updaters
