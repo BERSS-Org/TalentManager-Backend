@@ -1,6 +1,7 @@
 package com.berss.platform.support.interfaces.rest;
 
 import com.berss.platform.support.domain.model.commands.CreateSupportMessageCommand;
+import com.berss.platform.support.domain.model.commands.ChangeStatusCommand;
 import com.berss.platform.support.domain.model.commands.DeleteSupportMessageCommand;
 import com.berss.platform.support.domain.model.commands.UpdateSupportMessageCommand;
 import com.berss.platform.support.domain.model.queries.GetAllSupportMessagesQuery;
@@ -9,6 +10,7 @@ import com.berss.platform.support.domain.model.queries.GetSupportMessagesByCompa
 import com.berss.platform.support.domain.services.SupportMessageCommandService;
 import com.berss.platform.support.domain.services.SupportMessageQueryService;
 import com.berss.platform.support.interfaces.rest.resources.CreateSupportMessageResource;
+import com.berss.platform.support.interfaces.rest.resources.ChangeStatusResource;
 import com.berss.platform.support.interfaces.rest.resources.SupportMessageResource;
 import com.berss.platform.support.interfaces.rest.resources.UpdateSupportMessageResource;
 import com.berss.platform.support.interfaces.rest.transform.CreateSupportMessageCommandFromResourceAssembler;
@@ -89,6 +91,15 @@ public class SupportMessageController {
     public ResponseEntity<SupportMessageResource> updateSupportMessage(@PathVariable Long id, @RequestBody UpdateSupportMessageResource resource) {
         var command = UpdateSupportMessageCommandFromResourceAssembler.toCommandFromResource(id, resource);
         var updated = commandService.handle(command);
+        return updated
+                .map(m -> ResponseEntity.ok(SupportMessageResourceFromEntityAssembler.toResourceFromEntity(m)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}/status")
+    @Operation(summary = "Change support message status")
+    public ResponseEntity<SupportMessageResource> changeSupportMessageStatus(@PathVariable Long id, @RequestBody ChangeStatusResource resource) {
+        var updated = commandService.handle(new ChangeStatusCommand(id, resource.newStatus()));
         return updated
                 .map(m -> ResponseEntity.ok(SupportMessageResourceFromEntityAssembler.toResourceFromEntity(m)))
                 .orElse(ResponseEntity.notFound().build());

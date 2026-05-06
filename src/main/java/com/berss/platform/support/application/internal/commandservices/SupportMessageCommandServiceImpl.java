@@ -3,6 +3,7 @@ package com.berss.platform.support.application.internal.commandservices;
 import com.berss.platform.support.domain.model.aggregates.SupportMessage;
 import com.berss.platform.support.domain.model.commands.*;
 import com.berss.platform.support.domain.model.entities.Status;
+import com.berss.platform.support.domain.model.valueobjects.SupportStatus;
 import com.berss.platform.support.domain.services.SupportMessageCommandService;
 import com.berss.platform.support.infrastructure.persistence.jpa.repositories.StatusRepository;
 import com.berss.platform.support.infrastructure.persistence.jpa.repositories.SupportMessageRepository;
@@ -26,8 +27,9 @@ public class SupportMessageCommandServiceImpl implements SupportMessageCommandSe
             throw new IllegalArgumentException("Support message with content '%s' already exists".formatted(command.content()));
         }
 
-        // No se asigna estado
-        var supportMessage = new SupportMessage(command, null);
+        var pendingStatus = statusRepository.findByName(SupportStatus.PENDING)
+                .orElseGet(() -> statusRepository.save(new Status(SupportStatus.PENDING)));
+        var supportMessage = new SupportMessage(command, pendingStatus);
 
         try {
             supportMessageRepository.save(supportMessage);
@@ -54,7 +56,7 @@ public class SupportMessageCommandServiceImpl implements SupportMessageCommandSe
         return Optional.of(supportMessage);
     }
 
-    /*@Override
+    @Override
     public Optional<SupportMessage> handle(ChangeStatusCommand command) {
         var messageId = command.supportMessageId();
         var newStatusName = command.newStatus();
@@ -62,14 +64,15 @@ public class SupportMessageCommandServiceImpl implements SupportMessageCommandSe
         var supportMessage = supportMessageRepository.findById(messageId)
                 .orElseThrow(() -> new IllegalArgumentException("SupportMessage with id %d not found".formatted(messageId)));
 
-        var status = statusRepository.findByName(newStatusName.toUpperCase())
-                .orElseThrow(() -> new IllegalArgumentException("Status '%s' not found in database".formatted(newStatusName)));
+        var supportStatus = SupportStatus.valueOf(newStatusName.trim().toUpperCase());
+        var status = statusRepository.findByName(supportStatus)
+                .orElseGet(() -> statusRepository.save(new Status(supportStatus)));
 
         supportMessage.changeStatus(status);
 
         var updated = supportMessageRepository.save(supportMessage);
         return Optional.of(updated);
-    }*/
+    }
 
     @Override
     public void handle(DeleteSupportMessageCommand command) {

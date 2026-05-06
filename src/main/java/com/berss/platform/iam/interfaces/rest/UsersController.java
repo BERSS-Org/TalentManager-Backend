@@ -76,7 +76,7 @@ public class UsersController {
         var signInCommand = SignInCommandFromResourceAssembler.toCommandFromResource(signInResource);
         var authenticatedUser = commandService.handle(signInCommand);
         if (authenticatedUser.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         var authenticatedUserResource = AuthenticatedUserResourceFromEntityAssembler.toResourceFromEntity(

@@ -13,7 +13,7 @@ public interface SupportMessageCommandService {
     //Crear
     Long handle(CreateSupportMessageCommand command);
     //Actualizar
-    //Optional<SupportMessage> handle(ChangeStatusCommand command);
+    Optional<SupportMessage> handle(ChangeStatusCommand command);
 
     Optional<SupportMessage> handle(UpdateSupportMessageCommand command);
 

@@ -36,7 +36,9 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
             throw new IllegalArgumentException("Employeee with id %s not found".formatted(command.employeeId()));
         var employeeToUpdate = result.get();
         try {
-            var updatedEmployee = employeeRepository.save(employeeToUpdate.updateInformation(command.firstName(), command.lastName(), command.occupation(), command.entryDate(), command.teamName()));
+            employeeToUpdate.updateInformation(command.firstName(), command.lastName(), command.occupation(), command.entryDate(), command.teamName());
+            employeeToUpdate.updateCompensation(command.hourlyRate(), command.hourlyCost());
+            var updatedEmployee = employeeRepository.save(employeeToUpdate);
             return Optional.of(updatedEmployee);
         }catch (Exception e){
             throw new IllegalArgumentException("Error while updating employee: %s".formatted(e.getMessage()));

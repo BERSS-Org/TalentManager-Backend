@@ -6,8 +6,8 @@ public record CreateDailySummaryCommand(
         Integer day,
         Integer month,
         Integer year,
-        Integer entryTime,
-        Integer exitTime,
+        Double entryTime,
+        Double exitTime,
         Double inputAmount,
         Integer score
 ) {
@@ -25,7 +25,7 @@ public record CreateDailySummaryCommand(
             throw new IllegalArgumentException("day cannot be null, less than 1 or greater than 31");
         }
 
-        if (month == null || month <= 1 || month > 12) {
+        if (month == null || month < 1 || month > 12) {
             throw new IllegalArgumentException("month cannot be null, less than 1 or greater than 12");
         }
 
@@ -39,6 +39,10 @@ public record CreateDailySummaryCommand(
 
         if (exitTime == null || exitTime < 0 || exitTime > 24) {
             throw new IllegalArgumentException("exitTime cannot be null, less than 0 or greater than 24");
+        }
+
+        if (exitTime <= entryTime) {
+            throw new IllegalArgumentException("exitTime must be greater than entryTime");
         }
 
         if (score == null || score < 0 || score > 10) {

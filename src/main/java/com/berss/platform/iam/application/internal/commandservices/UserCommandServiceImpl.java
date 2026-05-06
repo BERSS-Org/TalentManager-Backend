@@ -56,9 +56,9 @@ public class UserCommandServiceImpl implements UserCommandService {
     public Optional<AuthenticatedUser> handle(SignInCommand command) {
         var user = userRepository.findByUsername(command.username());
         if (user.isEmpty())
-            throw new RuntimeException("User not found");
+            return Optional.empty();
         if (!passwordEncoder.matches(command.password(), user.get().getPassword()))
-            throw new RuntimeException("Invalid password");
+            return Optional.empty();
 
         var token = tokenService.generateToken(user.get().getUsername(), user.get().getCompanyId().companyId());
         return Optional.of(new AuthenticatedUser(user.get(), token));
@@ -74,8 +74,8 @@ public class UserCommandServiceImpl implements UserCommandService {
         } else {
             company = new Company(
                     command.companyName(),
-                    command.companyEmail(),
                     command.companyDescription(),
+                    command.companyEmail(),
                     CompanyStatus.ACTIVE
             );
         }
