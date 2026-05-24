@@ -342,6 +342,10 @@ public class AnalyticsController {
                 .toList();
     }
 
+    /**
+     * Returns stable, language-agnostic insight codes. The frontend resolves each code
+     * to localized copy, so the dashboard reads naturally in both Spanish and English.
+     */
     private List<String> buildInsights(List<Employee> employees,
                                        List<MonthlyAggregateResource> aggregates,
                                        double completionRate,
@@ -350,34 +354,35 @@ public class AnalyticsController {
         var insights = new ArrayList<String>();
 
         if (employees.isEmpty()) {
-            insights.add("Registra empleados para empezar a medir desempeno por equipos.");
+            insights.add("REGISTER_EMPLOYEES");
             return insights;
         }
         if (aggregates.isEmpty()) {
-            insights.add("Aun no hay registros diarios; captura jornadas para activar la analitica mensual automatica.");
+            insights.add("NO_DAILY_RECORDS");
         }
         if (completionRate >= 90) {
-            insights.add("El cumplimiento operativo esta fuerte; conviene documentar que equipos sostienen ese ritmo.");
+            insights.add("STRONG_COMPLETION");
         } else if (completionRate > 0) {
-            insights.add("El cumplimiento esta por debajo del objetivo; revisa capacidad, horas asignadas y bloqueos.");
+            insights.add("LOW_COMPLETION");
         }
         if (averageScore < 7 && averageScore > 0) {
-            insights.add("La evaluacion promedio sugiere riesgo de desempeno; prioriza feedback y seguimiento.");
+            insights.add("LOW_SCORE");
         }
         if (openSupportMessages > 0) {
-            insights.add("Hay solicitudes de soporte abiertas que pueden afectar la operacion.");
+            insights.add("OPEN_SUPPORT");
         }
         if (insights.isEmpty()) {
-            insights.add("El negocio esta estable; el siguiente paso es comparar tendencias por mes.");
+            insights.add("STABLE");
         }
 
         return insights;
     }
 
+    /** Stable health code resolved to localized copy on the frontend. */
     private String healthLabel(double averageScore, double completionRate) {
-        if (averageScore >= 8 && completionRate >= 85) return "Saludable";
-        if (averageScore >= 6 && completionRate >= 65) return "En observacion";
-        return "Requiere atencion";
+        if (averageScore >= 8 && completionRate >= 85) return "HEALTHY";
+        if (averageScore >= 6 && completionRate >= 65) return "WATCH";
+        return "ATTENTION";
     }
 
     private double round(double value) {

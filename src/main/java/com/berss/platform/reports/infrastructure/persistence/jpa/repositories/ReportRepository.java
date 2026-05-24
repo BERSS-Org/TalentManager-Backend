@@ -14,4 +14,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     Optional<Report> findReportById(Long id);
 
     List<Report> findReportByCompanyId(CompanyId companyId);
+
+    List<Report> findByEmployeeId(Long employeeId);
 }

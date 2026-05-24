@@ -1,6 +1,8 @@
 package com.berss.platform.support.domain.model.valueobjects;
 
 import jakarta.persistence.Embeddable;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import java.time.ZoneOffset;
@@ -16,11 +18,13 @@ public record RequestDate(LocalDateTime value) {
             throw new IllegalArgumentException("Request date cannot be null");
         }
 
-        // Convierte el valor recibido a UTC
+        // The client sends its local wall-clock time as a zone-less LocalDateTime.
+        // Allow up to a day of skew so any timezone's "now" is accepted while still
+        // rejecting clearly invalid future dates.
         var valueUtc = value.atOffset(ZoneOffset.UTC).toInstant();
-        var nowUtc = LocalDateTime.now(ZoneOffset.UTC).toInstant(ZoneOffset.UTC);
+        var limitUtc = Instant.now().plus(Duration.ofDays(1));
 
-        if (valueUtc.isAfter(nowUtc)) {
+        if (valueUtc.isAfter(limitUtc)) {
             throw new IllegalArgumentException("Request date cannot be in the future");
         }
     }
