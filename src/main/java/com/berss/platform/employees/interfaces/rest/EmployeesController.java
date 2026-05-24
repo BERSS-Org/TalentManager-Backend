@@ -47,11 +47,11 @@ public class EmployeesController {
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Employee not found")})
     public ResponseEntity<EmployeeResource> createEmployee(@RequestBody CreateEmployeeResource resource) {
-        var createCourseCommand = CreateEmployeeCommandFromResourceAssembler.toCommandFromResource(resource);
-        var employeeId = employeeCommandService.handle(createCourseCommand);
+        var createEmployeeCommand = CreateEmployeeCommandFromResourceAssembler.toCommandFromResource(resource);
+        var employeeId = employeeCommandService.handle(createEmployeeCommand);
         if (employeeId == null || employeeId == 0L) return ResponseEntity.badRequest().build();
-        var getCourseByIdQuery = new GetEmployeesByIdQuery(employeeId);
-        var employee = employeeQueryService.handle(getCourseByIdQuery);
+        var getEmployeeByIdQuery = new GetEmployeesByIdQuery(employeeId);
+        var employee = employeeQueryService.handle(getEmployeeByIdQuery);
         if (employee.isEmpty()) return ResponseEntity.notFound().build();
         var employeeEntity = employee.get();
         var employeeResource = EmployeeResourceFromEntityAssembler.toResourceFromEntity(employeeEntity);
@@ -64,8 +64,8 @@ public class EmployeesController {
             @ApiResponse(responseCode = "200", description = "Employee found"),
             @ApiResponse(responseCode = "404", description = "Employee not found")})
     public ResponseEntity<EmployeeResource> getEmployeeById(@PathVariable Long employeeId) {
-        var getCourseByIdQuery = new GetEmployeesByIdQuery(employeeId);
-        var employee = employeeQueryService.handle(getCourseByIdQuery);
+        var getEmployeeByIdQuery = new GetEmployeesByIdQuery(employeeId);
+        var employee = employeeQueryService.handle(getEmployeeByIdQuery);
         if (employee.isEmpty()) return ResponseEntity.notFound().build();
         var employeeEntity = employee.get();
         var employeeResource = EmployeeResourceFromEntityAssembler.toResourceFromEntity(employeeEntity);

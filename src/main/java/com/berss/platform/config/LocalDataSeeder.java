@@ -164,7 +164,7 @@ public class LocalDataSeeder implements CommandLineRunner {
         reportRepository.save(new Report(
                 "Pulso operativo del mes",
                 "Growth sostiene el mayor ingreso, Operations mantiene consistencia y Experience destaca en cumplimiento. " +
-                        "El foco recomendado es reforzar acompanamiento comercial para subir horas completadas sin perder calidad.",
+                        "El foco recomendado es reforzar el acompañamiento comercial para subir horas completadas sin perder calidad.",
                 companyId,
                 sofia.getId(),
                 lastMonth.getYear(),
@@ -172,7 +172,7 @@ public class LocalDataSeeder implements CommandLineRunner {
         ));
 
         supportMessageRepository.save(new SupportMessage(
-                "Necesitamos revisar permisos de usuarios para que el equipo de operaciones pueda cargar resumenes.",
+                "Necesitamos revisar permisos de usuarios para que el equipo de operaciones pueda cargar resúmenes.",
                 companyId,
                 LocalDateTime.now().minusDays(1),
                 LocalDateTime.now().minusDays(1).plusMinutes(15),
