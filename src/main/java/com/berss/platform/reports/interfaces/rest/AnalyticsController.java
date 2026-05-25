@@ -43,8 +43,6 @@ public class AnalyticsController {
 
     /** Default fallback when the company has no expectedDailyHours configured. */
     private static final double FALLBACK_HOURS_PER_DAY = 8.0;
-    /** Default fallback when the company has no workingDaysPerMonth configured. */
-    private static final int FALLBACK_WORKING_DAYS_PER_MONTH = 21;
     /** How many months of history the trend endpoint returns. */
     private static final int TREND_MONTHS = 6;
 
@@ -296,8 +294,6 @@ public class AnalyticsController {
         }
 
         double hoursPerDay = settings == null ? FALLBACK_HOURS_PER_DAY : settings.getExpectedDailyHoursOrDefault();
-        int workingDaysPerMonth = settings == null ? FALLBACK_WORKING_DAYS_PER_MONTH : settings.getWorkingDaysPerMonthOrDefault();
-        int totalHoursTarget = (int) Math.round(hoursPerDay * workingDaysPerMonth);
         double defaultCostRate = settings == null ? 0.0 : settings.getDefaultHourlyCostOrZero();
 
         return grouped.entrySet().stream()
@@ -306,10 +302,17 @@ public class AnalyticsController {
                 .map(entry -> {
                     var k = entry.getKey();
                     var rows = entry.getValue();
+                    int dayCount = rows.size();
                     double completedHours = rows.stream().mapToDouble(DailySummary::getHoursWorked).sum();
                     double totalInput = rows.stream().mapToDouble(DailySummary::getInput).sum();
                     double averageScore = rows.stream().mapToInt(DailySummary::getScore).average().orElse(0);
-                    double completionRate = totalHoursTarget == 0 ? 0 : (completedHours * 100.0) / totalHoursTarget;
+
+                    // Expected hours scale with the days actually logged, so completion reads as
+                    // "did they meet the expected hours on the days they worked" rather than being
+                    // dragged down by a fixed full-month target on partial / in-progress months.
+                    double expectedHours = hoursPerDay * dayCount;
+                    int totalHoursTarget = (int) Math.round(expectedHours);
+                    double completionRate = expectedHours == 0 ? 0 : (completedHours * 100.0) / expectedHours;
 
                     var employee = employeeById.get(k.employeeId());
                     double costRate = employee != null && employee.getHourlyCost() != null && employee.getHourlyCost() > 0
