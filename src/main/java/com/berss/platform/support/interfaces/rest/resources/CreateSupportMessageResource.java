@@ -1,8 +1,8 @@
 package com.berss.platform.support.interfaces.rest.resources;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
-public record CreateSupportMessageResource(String content, Long companyId, LocalDateTime requestDate, LocalDateTime receivedAt) {
+public record CreateSupportMessageResource(String content, Long companyId, Instant requestDate, Instant receivedAt) {
     public CreateSupportMessageResource {
         if (content == null || content.isBlank()) {
             throw new IllegalArgumentException("Content is required");

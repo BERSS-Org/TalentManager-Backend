@@ -13,7 +13,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -73,8 +73,8 @@ public class SupportMessage extends AuditableAbstractAggregateRoot<SupportMessag
         this.status = status;
     }
 
-    // Constructor adicional para uso opcional (como pruebas)
-    public SupportMessage(String content, Long companyId, LocalDateTime requestDate, LocalDateTime receivedAt, Status status) {
+    // Constructor adicional para uso opcional (como pruebas / seeding)
+    public SupportMessage(String content, Long companyId, Instant requestDate, Instant receivedAt, Status status) {
         this.content = content;
         this.companyId = new CompanyId(companyId);
         this.requestDate = new RequestDate(requestDate);

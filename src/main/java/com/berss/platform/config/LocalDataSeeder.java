@@ -24,8 +24,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -174,8 +175,8 @@ public class LocalDataSeeder implements CommandLineRunner {
         supportMessageRepository.save(new SupportMessage(
                 "Necesitamos revisar permisos de usuarios para que el equipo de operaciones pueda cargar resúmenes.",
                 companyId,
-                LocalDateTime.now().minusDays(1),
-                LocalDateTime.now().minusDays(1).plusMinutes(15),
+                Instant.now().minus(Duration.ofDays(1)),
+                Instant.now().minus(Duration.ofDays(1)).plus(Duration.ofMinutes(15)),
                 pendingStatus
         ));
     }
